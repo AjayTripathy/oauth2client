@@ -116,8 +116,11 @@ def _verify_signature(message, signature, certs):
     """
     for pem in certs:
         verifier = Verifier.from_string(pem, is_x509_cert=True)
-        if verifier.verify(message, signature):
-            return
+        try:
+            if verifier.verify(message, signature):
+                return
+        except ValueError as e:
+            pass
 
     # If we have not returned, no certificate confirms the signature.
     raise AppIdentityError('Invalid token signature')
